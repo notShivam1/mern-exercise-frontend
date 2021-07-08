@@ -1,46 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
+import { addOrder } from "../api/orders.api";
 
 export default function OrderModal({ show, handleClose }) {
   const [inputs, setInputs] = useState();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    fetchData();
+    addOrder(inputs);
+    handleClose();
   };
-  const fetchData = () => {
-    const {
-      orderDueDate,
-      customerBuyerName,
-      customerAddress,
-      customerPhone,
-      orderTotal,
-    } = inputs;
 
-    fetch("http://localhost:5000/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        orderNumber: Date.now(),
-        orderDueDate: orderDueDate,
-        customerBuyerName: customerBuyerName,
-        customerAddress: customerAddress,
-        customerPhone: customerPhone,
-        orderTotal: orderTotal,
-      }),
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          handleClose();
-        } else {
-          console.log("problem");
-        }
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
-      });
-  };
-  
   const handleInputChange = (event) => {
     event.persist();
     setInputs((inputs) => ({

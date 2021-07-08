@@ -14,9 +14,12 @@ export default function Orders() {
   const [editingItem, setEditingItem] = useState({});
   const history = useHistory();
 
+  useEffect(() => {
+    fetchData();
+  }, [show, showAddModal]);
+
   const handleClose = () => {
     setShow(false);
-    fetchData();
   };
   const handleShow = () => {
     setShow(true);
@@ -24,7 +27,6 @@ export default function Orders() {
 
   const handleCloseAddModal = () => {
     setShowAddModal(false);
-    fetchData();
   };
   const handleShowAddModal = () => {
     setShowAddModal(true);
@@ -39,6 +41,7 @@ export default function Orders() {
       .then((response) => response.json())
       .then((data) => {
         setOrders(data);
+        console.log("hogaya");
         setLoading(false);
       })
       .catch((error) => {

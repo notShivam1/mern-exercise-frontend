@@ -14,17 +14,17 @@ export default function Login() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(inputs);
+    const { email, password } = inputs;
     if (remember) {
-      localStorage.setItem("emailid", inputs.email);
-      localStorage.setItem("password", inputs.password);
+      localStorage.setItem("emailid", email);
+      localStorage.setItem("password", password);
     }
     fetch("http://localhost:5000/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: inputs.email,
-        password: inputs.password,
+        email: email,
+        password: password,
       }),
     })
       .then(async (response) => {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
+import { updateOrder } from "../api/orders.api";
 import "../styles/modal.css";
 
 export default function OrderModal({ show, handleClose, initialValues }) {
@@ -11,41 +12,8 @@ export default function OrderModal({ show, handleClose, initialValues }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    fetchData();
-  };
-
-  const fetchData = () => {
-    const {
-      orderDueDate,
-      customerBuyerName,
-      customerAddress,
-      customerPhone,
-      orderTotal,
-    } = inputs;
-    
-    fetch("http://localhost:5000/orders", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        orderNumber: initialValues.orderNumber,
-        orderDueDate: orderDueDate,
-        customerBuyerName: customerBuyerName,
-        customerAddress: customerAddress,
-        customerPhone: customerPhone,
-        orderTotal: orderTotal,
-      }),
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          console.log("done");
-          handleClose();
-        } else {
-          console.log("problem");
-        }
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
-      });
+    updateOrder(inputs, initialValues.orderNumber);
+    handleClose();
   };
 
   const handleInputChange = (event) => {
