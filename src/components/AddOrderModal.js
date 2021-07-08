@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { addOrder } from "../api/orders.api";
+import "../styles/modal.css";
 
 export default function OrderModal({ show, handleClose }) {
   const [inputs, setInputs] = useState();
@@ -22,7 +23,7 @@ export default function OrderModal({ show, handleClose }) {
   return (
     <Modal show={show} onHide={handleClose}>
       <Form onSubmit={handleSubmit}>
-        <Form.Group style={{ margin: 20 }} id="orderDueDate">
+        <Form.Group className="Marginform" id="orderDueDate">
           <Form.Label>Order Due Date:</Form.Label>
           <Form.Control
             name="orderDueDate"
@@ -32,7 +33,7 @@ export default function OrderModal({ show, handleClose }) {
             required
           />
         </Form.Group>
-        <Form.Group style={{ margin: 20 }} id="customerBuyerName">
+        <Form.Group className="Marginform" id="customerBuyerName">
           <Form.Label>Customer Buyer Name:</Form.Label>
           <Form.Control
             name="customerBuyerName"
@@ -41,7 +42,7 @@ export default function OrderModal({ show, handleClose }) {
             required
           />
         </Form.Group>
-        <Form.Group style={{ margin: 20 }} id="customerAddress">
+        <Form.Group className="Marginform" id="customerAddress">
           <Form.Label>Customer Address: </Form.Label>
           <Form.Control
             name="customerAddress"
@@ -50,7 +51,7 @@ export default function OrderModal({ show, handleClose }) {
             required
           />
         </Form.Group>
-        <Form.Group style={{ margin: 20 }} id="customerPhone">
+        <Form.Group className="Marginform" id="customerPhone">
           <Form.Label>Customer Phone Number: </Form.Label>
           <Form.Control
             name="customerPhone"
@@ -60,7 +61,7 @@ export default function OrderModal({ show, handleClose }) {
             required
           />
         </Form.Group>
-        <Form.Group style={{ margin: 20 }} id="orderTotal">
+        <Form.Group className="Marginform" id="orderTotal">
           <Form.Label>Order Total: </Form.Label>
           <Form.Control
             name="orderTotal"
@@ -70,9 +71,9 @@ export default function OrderModal({ show, handleClose }) {
             required
           />
         </Form.Group>
-        <div style={{ display: "flex", alignSelf: "center", margin: 10 }}>
+        <div className="ButtonContainer">
           <Button className="w-100" type="submit">
-            Save Changes
+            Save Order
           </Button>
         </div>
       </Form>

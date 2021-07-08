@@ -41,7 +41,6 @@ export default function Orders() {
       .then((response) => response.json())
       .then((data) => {
         setOrders(data);
-        console.log("hogaya");
         setLoading(false);
       })
       .catch((error) => {

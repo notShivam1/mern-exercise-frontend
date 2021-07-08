@@ -48,7 +48,6 @@ export default function Login() {
 
   const handleRememberChange = (event) => {
     setRemember(event.target.checked);
-    console.log(event.target.checked);
   };
 
   return (
