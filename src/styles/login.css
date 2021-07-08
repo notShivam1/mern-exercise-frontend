@@ -1,0 +1,6 @@
+.Card {
+  align-items: center;
+}
+.CardBody {
+  min-width: 400px;
+}

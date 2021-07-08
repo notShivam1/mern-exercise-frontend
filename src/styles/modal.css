@@ -1,0 +1,8 @@
+.ButtonContainer {
+  display: flex;
+  align-self: center;
+  margin: 10px;
+}
+.Marginform {
+  margin: 20px;
+}

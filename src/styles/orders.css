@@ -1,0 +1,13 @@
+.Container {
+  display: flex;
+  justify-content: flex-end;
+}
+.MarginButton {
+  margin: 10px;
+}
+.Card {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: baseline;
+}

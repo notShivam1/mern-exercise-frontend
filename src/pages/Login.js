@@ -1,16 +1,24 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import "../styles/login.css";
 
 export default function Login() {
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const history = useHistory();
-  const [inputs, setInputs] = useState({});
+  const [inputs, setInputs] = useState({
+    email: localStorage.getItem("emailid") || "",
+    password: localStorage.getItem("password") || "",
+  });
+  const [remember, setRemember] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(inputs.email, inputs.password);
+    console.log(inputs);
+    if (remember) {
+      localStorage.setItem("emailid", inputs.email);
+      localStorage.setItem("password", inputs.password);
+    }
     fetch("http://localhost:5000/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -21,15 +29,13 @@ export default function Login() {
     })
       .then(async (response) => {
         if (response.ok) {
-          console.log("done");
           history.push("/orders");
         } else {
-          console.log("problem");
           setError("could not login");
         }
       })
       .catch((error) => {
-        console.error("There was an error!", error);
+        setError("could not login", error);
       });
   };
   const handleInputChange = (event) => {
@@ -40,10 +46,15 @@ export default function Login() {
     }));
   };
 
+  const handleRememberChange = (event) => {
+    setRemember(event.target.checked);
+    console.log(event.target.checked);
+  };
+
   return (
     <>
-      <Card >
-        <Card.Body>
+      <Card className="Card">
+        <Card.Body className="CardBody">
           <h2 className="text-center mb-4">Log In</h2>
           {error && <Alert variant="danger">{error}</Alert>}
           <Form onSubmit={handleSubmit}>
@@ -51,6 +62,7 @@ export default function Login() {
               <Form.Label>Email</Form.Label>
               <Form.Control
                 name="email"
+                type="email"
                 value={inputs.email}
                 onChange={handleInputChange}
                 required
@@ -66,7 +78,20 @@ export default function Login() {
                 required
               />
             </Form.Group>
-            <Button disabled={loading} className="w-100" type="submit">
+            <div>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                onChange={handleRememberChange}
+                id="flexCheckChecked"
+                checked={remember}
+              />
+              <label class="form-check-label" for="flexCheckChecked">
+                Remember me
+              </label>
+            </div>
+            <Button className="w-100" type="submit">
               Log In
             </Button>
           </Form>

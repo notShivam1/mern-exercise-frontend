@@ -1,29 +1,51 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, Modal, Form } from "react-bootstrap";
+import { Button, Card, Alert } from "react-bootstrap";
+import EditOrderModal from "../components/EditOrderModal";
+import AddOrderModal from "../components/AddOrderModal";
+import { useHistory } from "react-router-dom";
+import "../styles/orders.css";
 
 export default function Orders() {
+  const [error, setError] = useState("");
   const [orders, setOrders] = useState({});
   const [loading, setLoading] = useState(true);
   const [show, setShow] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [editingItem, setEditingItem] = useState({});
-  const [inputs, setInputs] = useState({});
+  const history = useHistory();
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => {
+    setShow(false);
+    fetchData();
+  };
+  const handleShow = () => {
+    setShow(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setShowAddModal(false);
+    fetchData();
+  };
+  const handleShowAddModal = () => {
+    setShowAddModal(true);
+  };
 
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
     fetch("http://localhost:5000/orders")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setOrders(data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("There was an error!", error);
+        setError(error);
         setLoading(false);
       });
-  }, []);
+  };
 
   const deleteItem = (orderNumber) => {
     fetch("http://localhost:5000/orders", {
@@ -34,59 +56,18 @@ export default function Orders() {
       }),
     }).then(async (response) => {
       if (response.ok) {
-        console.log("done");
-        window.location.reload();
+        fetchData();
       } else {
-        console.log("problem");
+        setError("couldnt delete item");
       }
     });
   };
+
   const editItem = (orderNumber) => {
-    console.log(orderNumber);
     const order = orders.filter((o) => o.orderNumber === orderNumber);
-    console.log(order);
     setEditingItem(order);
     handleShow();
   };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(inputs, editingItem[0].orderNumber);
-    fetch("http://localhost:5000/orders", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        orderNumber: editingItem[0].orderNumber,
-        orderDueDate: inputs.orderDueDate,
-        customerBuyerName: inputs.customerBuyerName,
-        customerAddress: inputs.customerAddress,
-        customerPhone: inputs.customerPhone,
-        orderTotal: inputs.orderTotal,
-      }),
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          console.log("done");
-        } else {
-          console.log("problem");
-        }
-      })
-      .catch((error) => {
-        console.error("There was an error!", error);
-      });
-  };
-
-  const handleInputChange = (event) => {
-    event.persist();
-    setInputs((inputs) => ({
-      ...inputs,
-      [event.target.name]: event.target.value,
-    }));
-  };
-
-  useEffect(() => {
-    console.log(editingItem);
-  }, [editingItem]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -94,21 +75,45 @@ export default function Orders() {
 
   return (
     <div>
-      {orders ? (
+      <div className="Container">
+        {error && <Alert variant="danger">{error}</Alert>}
+        <Button
+          variant="primary"
+          onClick={handleShowAddModal}
+          className="MarginButton"
+        >
+          Add order
+        </Button>
+        <Button
+          variant="primary"
+          onClick={() => history.push("/")}
+          className="MarginButton"
+        >
+          Log Out
+        </Button>
+      </div>
+      {orders.length ? (
         orders?.map((o, i) => {
           return (
-            <Card
-              as="ul"
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                alignItems: "baseline",
-              }}
-            >
+            <Card as="ul" className="Card">
               <div>
                 <Card.Body>
-                  <Card.Title>Order No. {o.orderNumber}</Card.Title>
+                  <Card.Title>
+                    Order No. {o.orderNumber}
+                    <Button
+                      variant="danger"
+                      onClick={() => deleteItem(o.orderNumber)}
+                      className="MarginButton"
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      variant="primary"
+                      onClick={() => editItem(o.orderNumber)}
+                    >
+                      Edit
+                    </Button>
+                  </Card.Title>
                   <Card.Text>Order Due Date: {o.orderDueDate}</Card.Text>
                   <Card.Text>
                     Customer Buyer Name: {o.customerBuyerName}
@@ -120,73 +125,21 @@ export default function Orders() {
                   <Card.Text>Order Total: {o.orderTotal}</Card.Text>
                 </Card.Body>
               </div>
-              <Button
-                variant="primary"
-                onClick={() => deleteItem(o.orderNumber)}
-              >
-                Delete
-              </Button>
-              <Button variant="primary" onClick={() => editItem(o.orderNumber)}>
-                Edit
-              </Button>
             </Card>
           );
         })
       ) : (
-        <div></div>
+        <div>No orders</div>
       )}
-      <Modal show={show} onHide={handleClose}>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group id="orderDueDate">
-            <Form.Label>Order Due Date:</Form.Label>
-            <Form.Control
-              name="orderDueDate"
-              value={inputs.orderDueDate}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group id="customerBuyerName">
-            <Form.Label>Customer Buyer Name:</Form.Label>
-            <Form.Control
-              name="customerBuyerName"
-              value={inputs.customerBuyerName}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group id="customerAddress">
-            <Form.Label>Customer Address: </Form.Label>
-            <Form.Control
-              name="customerAddress"
-              value={inputs.customerAddress}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group id="customerPhone">
-            <Form.Label>Customer Phone Number: </Form.Label>
-            <Form.Control
-              name="customerPhone"
-              value={inputs.customerPhone}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Form.Group id="orderTotal">
-            <Form.Label>Order Total: </Form.Label>
-            <Form.Control
-              name="orderTotal"
-              value={inputs.orderTotal}
-              onChange={handleInputChange}
-              required
-            />
-          </Form.Group>
-          <Button disabled={loading} className="w-100" type="submit">
-            Save Changes
-          </Button>
-        </Form>
-      </Modal>
+      <EditOrderModal
+        show={show}
+        handleClose={() => handleClose()}
+        initialValues={editingItem[0] || {}}
+      ></EditOrderModal>
+      <AddOrderModal
+        show={showAddModal}
+        handleClose={() => handleCloseAddModal()}
+      ></AddOrderModal>
     </div>
   );
 }
